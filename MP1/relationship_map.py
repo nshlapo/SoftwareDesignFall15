@@ -76,7 +76,7 @@ for i in range(int(depth)):
 # set up figure for plotting
 fig=plt.figure()
 ax = fig.add_subplot(111)
-ax.set_title('Articles related to ' + search + '\n Click on nodes to find out more about them')
+ax.set_title('Articles related to ' + search + '\n Zoom in and click on nodes to find out more about them')
 plt.axis('off')
 
 # create network graph
