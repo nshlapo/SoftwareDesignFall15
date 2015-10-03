@@ -1,11 +1,13 @@
 import networkx as nx
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from pattern.web import *
+from pattern.web import Wikipedia # If you're not using a lot of functions, better practice to import them individually
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
-import time
+
+# do you ever use these three? Code ran for me without them
+#from selenium.common.exceptions import TimeoutException
+#from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+#import time
 
 w = Wikipedia()
 
@@ -41,7 +43,7 @@ def scan_articles(input_dict):
 def onclick(event):
     """Open a node's webpage if it is clicked on."""
 
-    global ix, iy
+    # global ix, iy Why do these need to be globals?
     # store click location
     ix, iy = event.xdata, event.ydata
     node = is_node(ix, iy)
@@ -58,13 +60,22 @@ def is_node(ix, iy):
         dx = ele[1][0] - ix
         dy = ele[1][1] - iy
         r = pow(pow(dx,2) + pow(dy,2),.5)
+        # How did you determine that .05 is the appropriate value? What units is it in?
         if r < .05:
             return (True, ele[0], ele[1])
     return (False, 0)
 
 # start program with user input
-search = raw_input("What subject would you like to generate a map for?")
-depth = raw_input("What depth should the map be (start with 1 or 2)?")
+search = raw_input("What subject would you like to generate a map for? ")
+depth = raw_input("What depth should the map be (start with 1 or 2)? ")
+
+# Your code would be more reusable (outside the scope of this project)
+# if you wrapped everything below this line in a function which takes
+# search and depth as inputs, then handled user input and called the
+# function in an if __name__ == "__main__" statement at the bottom of
+# the file (see http://stackoverflow.com/questions/419163/what-does-if-name-main-do)
+# That way, you'd be able to import this module into other files without
+# causing the program to run.
 
 # perform the searches
 related_dict = {}
@@ -74,14 +85,14 @@ for i in range(int(depth)):
     scan_articles(related_dict)
 
 # set up figure for plotting
-fig=plt.figure()
+fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.set_title('Articles related to ' + search + '\n Click on nodes to find out more about them')
 plt.axis('off')
 
 # create network graph
 G = nx.Graph(related_dict)
-pos=nx.spring_layout(G)
+pos = nx.spring_layout(G)
 # pass button press event information
 cid = fig.canvas.mpl_connect('button_press_event', onclick)
 nx.draw_networkx(G, pos=pos, ax=ax, node_size=300)
