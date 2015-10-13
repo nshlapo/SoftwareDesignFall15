@@ -1,5 +1,4 @@
-""" Analyzes the word frequencies in a book downloaded from
-  Project Gutenberg """
+""" Analyzes the word frequencies in a book downloaded from Project Gutenberg """
 
 import string as s
 import re
