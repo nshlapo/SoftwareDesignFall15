@@ -3,9 +3,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pattern.web import *
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
-import time
+# from selenium.common.exceptions import TimeoutException
+# from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+# import time
 
 w = Wikipedia()
 
@@ -62,27 +62,28 @@ def is_node(ix, iy):
             return (True, ele[0], ele[1])
     return (False, 0)
 
-# start program with user input
-search = raw_input("What subject would you like to generate a map for?")
-depth = raw_input("What depth should the map be (start with 1 or 2)?")
+if __name__ == '__main__':
+    # start program with user input
+    search = raw_input("What subject would you like to generate a map for?")
+    depth = raw_input("What depth should the map be (start with 1 or 2)?")
 
-# perform the searches
-related_dict = {}
-related_dict[search] = get_related_articles(search)
-for i in range(int(depth)):
-    print "Depth " + str(i+1)
-    scan_articles(related_dict)
+    # perform the searches
+    related_dict = {}
+    related_dict[search] = get_related_articles(search)
+    for i in range(int(depth)):
+        print "Depth " + str(i+1)
+        scan_articles(related_dict)
 
-# set up figure for plotting
-fig=plt.figure()
-ax = fig.add_subplot(111)
-ax.set_title('Articles related to ' + search + '\n Zoom in and click on nodes to find out more about them')
-plt.axis('off')
+    # set up figure for plotting
+    fig=plt.figure()
+    ax = fig.add_subplot(111)
+    ax.set_title('Articles related to ' + search + '\n Zoom in and click on nodes to find out more about them')
+    plt.axis('off')
 
-# create network graph
-G = nx.Graph(related_dict)
-pos=nx.spring_layout(G)
-# pass button press event information
-cid = fig.canvas.mpl_connect('button_press_event', onclick)
-nx.draw_networkx(G, pos=pos, ax=ax, node_size=300)
-plt.show()
+    # create network graph
+    G = nx.Graph(related_dict)
+    pos=nx.spring_layout(G)
+    # pass button press event information
+    cid = fig.canvas.mpl_connect('button_press_event', onclick)
+    nx.draw_networkx(G, pos=pos, ax=ax, node_size=300)
+    plt.show()
