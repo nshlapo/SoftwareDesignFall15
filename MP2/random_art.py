@@ -32,6 +32,7 @@ def build_random_function(min_depth, max_depth):
             return ['cos_pi', rand_func(rec - 1)]
 
     # start the recursion call
+    # interested use of the nested functions to work with min/max depth!
     f = rand_func(depth)
     return f
 

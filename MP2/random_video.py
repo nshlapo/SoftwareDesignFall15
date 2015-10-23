@@ -97,6 +97,9 @@ def remap_interval(val, input_interval_start, input_interval_end, output_interva
 
     return out
 
+# this looks good but don't forget you can import your functions from
+# your other code - no need to copy-paste
+
 def create_image(px, py, min_depth, max_depth, filename, t, red, green, blue):
     """ Creates one frame of video based on 3 random functions, the frame number,
         frame size, and desired depths
