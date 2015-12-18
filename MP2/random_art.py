@@ -2,11 +2,11 @@ from random import randint
 from PIL import Image
 from math import sin, cos, pi
 
-def build_random_function(min_depth, max_depth):
+def build_random_function(min_depth, max_depth, rand_val=1):
     """ Creates a nested list of strings that represents a randomly generated
         function.
 
-        Recurses a random number of times between min_depth and max_depth.
+        Recurses a random number of times between min_depth and max_depth
     """
     depth = randint(min_depth, max_depth)
 
@@ -17,41 +17,49 @@ def build_random_function(min_depth, max_depth):
 
         # maximum recursion has been reached, begin passing up the outputs
         if rec is 0:
-            var = ['x', 'y']
-            rand = randint(0,1)
+            var = ['x', 'y', 't', 'x', 'y']
+            # alter the ratios of x, y, and t
+            rand = randint(0, rand_val)
             return var[rand]
 
+        rand = randint(0,3)
         # randomly decide what function to return, then recursively return the
         # number of inputs it needs
-        rand = randint(0,2)
         if rand is 0:
-            return ['sin_pi', rand_func(rec - 1)]
+            return ['sin_pi', rand_func(rec-1)]
         elif rand is 1:
-            return ['prod', rand_func(rec - 1), rand_func(rec - 1)]
+            return ['prod', rand_func(rec-1), rand_func(rec-1)]
         elif rand is 2:
-            return ['cos_pi', rand_func(rec - 1)]
+            return ['cos_pi', rand_func(rec-1)]
+        elif rand is 3:
+            return ['sum', rand_func(rec-1), rand_func(rec-1)]
 
     # start the recursion call
     f = rand_func(depth)
     return f
 
 
-def evaluate_random_function(f, x, y):
+def evaluate_random_function(f, x, y, t):
     """ Takes in a randomly generate function in the form of nested lists of
-        strings, x and y, and then return value of function at that point and
+        strings, x, y and t, and then return value of function at that point and
         time.
 
         f: the randomly generated function
         x, y: coordinates of pixel in generated frame
+        t: the frame number of the video
     """
+
     def translate(list1):
         """ Recursive function returns nested list as mathematical expression
         """
+
         # these cases end the recursion
         if list1 is 'x':
             return x
         elif list1 is 'y':
             return y
+        elif list1 is 't':
+            return t
         # these cases continue the recursion
         elif list1[0] is 'sin_pi':
             sine = sin(pi*translate(list1[1]))
@@ -62,7 +70,11 @@ def evaluate_random_function(f, x, y):
         elif list1[0] is 'prod':
             product = translate(list1[1])*translate(list1[2])
             return product
+        elif list1[0] is 'sum':
+            suma = translate(list1[1])+translate(list1[2])
+            return suma
 
+    # start the recursive call
     z = translate(f)
     return z
 
@@ -84,21 +96,16 @@ def remap_interval(val, input_interval_start, input_interval_end, output_interva
     out = output_interval_end - in_ratio*out_len
     return out
 
-def create_image(px, py, min_depth, max_depth, filename):
-    """ Creates one frame of video based on 3 random functions, frame size,
-        and desired depths.
+def create_image(px, py, min_depth, max_depth, filename, t, red, green, blue):
+    """ Creates one frame of video based on 3 random functions, the frame number,
+        frame size, and desired depths
 
         px, py: the size of the frame in pixels
         min_depth, max_depth: depth inputs to build_random_function
         filename: name to save image to
         t: frame of video
-        red, green, blue: unique random function for each pixel value
+        red, green, blue: consistent unique random function for each pixel value
     """
-
-    # unique random functions for each RGB value that are generated for each image
-    red = build_random_function(min_depth, max_depth)
-    green = build_random_function(min_depth, max_depth)
-    blue = build_random_function(min_depth, max_depth)
 
     z = []
     # iterate over each pixel
@@ -106,22 +113,27 @@ def create_image(px, py, min_depth, max_depth, filename):
         for j in range(py):
             map_i = remap_interval(i, 0, px-1, -1, 1)
             map_j = remap_interval(j, 0, py-1, -1, 1)
+            map_t = remap_interval(t, 0, 75, -1, 1)
 
-            rval = evaluate_random_function(red, map_i, map_j)
-            gval = evaluate_random_function(green, map_i, map_j)
-            bval = evaluate_random_function(blue, map_i, map_j)
+            rval = evaluate_random_function(red, map_i, map_j, map_t)
+            gval = evaluate_random_function(green, map_i, map_j, map_t)
+            bval = evaluate_random_function(blue, map_i, map_j, map_t)
 
             r = int(remap_interval(rval, -1, 1, 0, 255))
             g = int(remap_interval(gval, -1, 1, 0, 255))
             b = int(remap_interval(bval, -1, 1, 0, 255))
             # create a list of tuples to represent pixel RGB values
             z.append((r,g,b))
-    # use pixel list to create a .png file
+    # use pixel list to create .png file
     im = Image.new("RGB",(px,py))
     im.putdata(z)
-    im.save(filename, 'PNG')
+    im.save('temp/' + filename , 'PNG')
 
 if __name__ == '__main__':
     # create 20 random images of given depth and size
-    for i in range(20):
-        create_image(350, 350, 10, 'example' + str(i) + '.png')
+    for i in range(1):
+        red = build_random_function(0,8,4)
+        green = build_random_function(2,5,4)
+        blue = build_random_function(1,7,4)
+
+        create_image(350, 350, 1, 5, 'example' + str(i) + '.png', 0, red, green, blue)
