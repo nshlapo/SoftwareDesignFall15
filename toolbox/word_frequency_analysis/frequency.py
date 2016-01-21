@@ -96,4 +96,4 @@ if __name__ == "__main__":
     print_func('Proust.txt', True)
     print_func('Voyage.txt', True)
     print_func('NightDay.txt', True)
-    print_func('Oz.txt', True)
+    print_func('Oz.txt', False)

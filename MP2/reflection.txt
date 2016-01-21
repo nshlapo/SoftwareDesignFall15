@@ -1,0 +1,2 @@
+Learning when to abandon a given strategy and start with a new approach, vs
+when to modify current approach, like with Kai and recursion.
